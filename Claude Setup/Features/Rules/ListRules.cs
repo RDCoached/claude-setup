@@ -5,16 +5,18 @@ using Claude_Setup.Infrastructure.FileSystem;
 
 namespace Claude_Setup.Features.Rules;
 
-public sealed class ListRules(
-    ClaudePathResolver pathResolver,
-    ClaudeFileReader fileReader,
-    EntityListHelper listHelper)
+public sealed class ListRules(ClaudePathResolver pathResolver, ClaudeFileReader fileReader)
+    : EntityListHandler<Rule, RuleSummary>(pathResolver, fileReader)
 {
-    public Task<IReadOnlyList<RuleSummary>> HandleAsync(bool isGlobal = false) =>
-        listHelper.ListEntitiesAsync(
-            pathResolver.GetRulesPath(isGlobal),
-            path => Directory.GetFiles(path, "*.md"),
-            fileReader.ReadRuleAsync,
-            (rule, path) => new RuleSummary(rule.Name, path)
-        );
+    protected override string GetPath(bool isGlobal) =>
+        PathResolver.GetRulesPath(isGlobal);
+
+    protected override IEnumerable<string> GetItems(string path) =>
+        Directory.GetFiles(path, "*.md");
+
+    protected override Task<Rule?> ReadEntityAsync(string path) =>
+        FileReader.ReadRuleAsync(path);
+
+    protected override RuleSummary CreateSummary(Rule rule, string path) =>
+        new(rule.Name, path);
 }

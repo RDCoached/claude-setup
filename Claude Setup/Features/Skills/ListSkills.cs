@@ -5,16 +5,18 @@ using Claude_Setup.Infrastructure.FileSystem;
 
 namespace Claude_Setup.Features.Skills;
 
-public sealed class ListSkills(
-    ClaudePathResolver pathResolver,
-    ClaudeFileReader fileReader,
-    EntityListHelper listHelper)
+public sealed class ListSkills(ClaudePathResolver pathResolver, ClaudeFileReader fileReader)
+    : EntityListHandler<Skill, SkillSummary>(pathResolver, fileReader)
 {
-    public Task<IReadOnlyList<SkillSummary>> HandleAsync(bool isGlobal = false) =>
-        listHelper.ListEntitiesAsync(
-            pathResolver.GetSkillsPath(isGlobal),
-            Directory.GetDirectories,
-            fileReader.ReadSkillAsync,
-            (skill, path) => new SkillSummary(skill.Name, skill.Metadata.Description, path)
-        );
+    protected override string GetPath(bool isGlobal) =>
+        PathResolver.GetSkillsPath(isGlobal);
+
+    protected override IEnumerable<string> GetItems(string path) =>
+        Directory.GetDirectories(path);
+
+    protected override Task<Skill?> ReadEntityAsync(string path) =>
+        FileReader.ReadSkillAsync(path);
+
+    protected override SkillSummary CreateSummary(Skill skill, string path) =>
+        new(skill.Name, skill.Metadata.Description, path);
 }

@@ -1,4 +1,3 @@
-using Claude_Setup.Features.Shared;
 using Claude_Setup.Features.Skills;
 using Claude_Setup.Infrastructure.Configuration;
 using Claude_Setup.Infrastructure.FileSystem;
@@ -20,8 +19,7 @@ public sealed class ListSkillsTests
         var pathResolver = new TestPathResolver(testStructure.RootPath);
         var parser = new FrontmatterParser();
         var reader = new ClaudeFileReader(parser);
-        var listHelper = new EntityListHelper();
-        var handler = new ListSkills(pathResolver, reader, listHelper);
+        var handler = new ListSkills(pathResolver, reader);
 
         // Act
         var skills = await handler.HandleAsync(isGlobal: false);
@@ -43,8 +41,7 @@ public sealed class ListSkillsTests
         var pathResolver = new TestPathResolver(testStructure.RootPath);
         var parser = new FrontmatterParser();
         var reader = new ClaudeFileReader(parser);
-        var listHelper = new EntityListHelper();
-        var handler = new ListSkills(pathResolver, reader, listHelper);
+        var handler = new ListSkills(pathResolver, reader);
 
         // Act
         var skills = await handler.HandleAsync(isGlobal: false);
@@ -62,8 +59,7 @@ public sealed class ListSkillsTests
         var pathResolver = new TestPathResolver(testStructure.RootPath);
         var parser = new FrontmatterParser();
         var reader = new ClaudeFileReader(parser);
-        var listHelper = new EntityListHelper();
-        var handler = new ListSkills(pathResolver, reader, listHelper);
+        var handler = new ListSkills(pathResolver, reader);
 
         // Act
         var skills = await handler.HandleAsync(isGlobal: false);

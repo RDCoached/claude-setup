@@ -4,7 +4,6 @@ using Claude_Setup.Features.Commands;
 using Claude_Setup.Features.Console;
 using Claude_Setup.Features.Deploy;
 using Claude_Setup.Features.Rules;
-using Claude_Setup.Features.Shared;
 using Claude_Setup.Features.Skills;
 using Claude_Setup.Infrastructure.Configuration;
 using Claude_Setup.Infrastructure.FileSystem;
@@ -18,9 +17,6 @@ builder.Services.AddSingleton<FrontmatterParser>();
 builder.Services.AddSingleton<ClaudeFileReader>();
 builder.Services.AddSingleton<ClaudeFileWriter>();
 builder.Services.AddSingleton<FileCopier>();
-
-// Register shared helpers
-builder.Services.AddSingleton<EntityListHelper>();
 
 // Register feature handlers
 builder.Services.AddSingleton<ListSkills>();
