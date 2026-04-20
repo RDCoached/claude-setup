@@ -34,18 +34,18 @@ var runApiOnly = args.Contains("--api");
 
 if (runApiOnly)
 {
-    Console.WriteLine("Running in API-only mode on http://localhost:5000");
-    Console.WriteLine("Swagger UI: http://localhost:5000/swagger");
-    await app.RunAsync("http://localhost:5000");
+    Console.WriteLine("Running in API-only mode on http://localhost:5100");
+    Console.WriteLine("Swagger UI: http://localhost:5100/swagger");
+    await app.RunAsync("http://localhost:5100");
 }
 else
 {
     // Run background API + interactive console
-    var apiTask = app.RunAsync("http://localhost:5000");
+    var apiTask = app.RunAsync("http://localhost:5100");
 
     Console.WriteLine("Claude Configuration Manager");
-    Console.WriteLine("API running in background on http://localhost:5000");
-    Console.WriteLine("Swagger UI: http://localhost:5000/swagger\n");
+    Console.WriteLine("API running in background on http://localhost:5100");
+    Console.WriteLine("Swagger UI: http://localhost:5100/swagger\n");
 
     var menu = app.Services.GetRequiredService<InteractiveMenu>();
     var cts = new CancellationTokenSource();
