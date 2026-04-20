@@ -11,7 +11,7 @@ public class ClaudePathResolver
         _workingDirectory = Directory.GetCurrentDirectory();
     }
 
-    public string GetGlobalClaudePath()
+    public virtual string GetGlobalClaudePath()
     {
         return Path.Combine(_homeDirectory, ".claude");
     }
