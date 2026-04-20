@@ -59,8 +59,9 @@ public sealed class InteractiveMenu(
         System.Console.WriteLine("  🔄 Deploy");
         System.Console.WriteLine("  6. View Diff (Local vs Global)");
         System.Console.WriteLine("  7. Validate Configuration");
-        System.Console.WriteLine("  8. Deploy to ~/.claude (with backup)");
-        System.Console.WriteLine("  9. Import from ~/.claude (pull changes)");
+        System.Console.WriteLine("  8. Deploy (Dry Run / Preview)");
+        System.Console.WriteLine("  9. Deploy to ~/.claude (with backup)");
+        System.Console.WriteLine("  10. Import from ~/.claude (pull changes)");
         System.Console.WriteLine();
         System.Console.WriteLine("  0. Exit");
         System.Console.WriteLine();
@@ -100,10 +101,14 @@ public sealed class InteractiveMenu(
                 break;
 
             case "8":
-                await DeployAsync();
+                await DeployDryRunAsync();
                 break;
 
             case "9":
+                await DeployAsync();
+                break;
+
+            case "10":
                 await ImportAsync();
                 break;
 
@@ -289,6 +294,30 @@ public sealed class InteractiveMenu(
                 System.Console.WriteLine($"     {error.Message}");
                 System.Console.WriteLine();
             }
+        }
+    }
+
+    private async Task DeployDryRunAsync()
+    {
+        System.Console.WriteLine("\n🔍 Deploy Preview (Dry Run)\n");
+        System.Console.WriteLine("Simulating deployment without making any changes...\n");
+
+        var options = new DeployOptions(BackupExisting: false, DryRun: true);
+        var result = await deployConfig.HandleAsync(options);
+
+        System.Console.WriteLine("✅ Dry run complete!");
+        System.Console.WriteLine($"   Files that would be deployed: {CountFilesToDeploy()}");
+        System.Console.WriteLine();
+        System.Console.WriteLine("No files were actually copied. This was a preview only.");
+        System.Console.WriteLine("Use option 9 to perform the actual deployment.\n");
+
+        int CountFilesToDeploy()
+        {
+            var localRoot = Path.Combine(Directory.GetCurrentDirectory(), "local-config");
+            if (!Directory.Exists(localRoot))
+                return 0;
+
+            return Directory.GetFiles(localRoot, "*", SearchOption.AllDirectories).Length;
         }
     }
 
