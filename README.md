@@ -13,10 +13,12 @@ A .NET 10 console application with embedded Web API to manage Claude configurati
 - API-only mode with `--api` flag
 
 ✅ **Configuration Management**
-- Read/write skills with YAML frontmatter
-- Read/write agents, rules, and commands
+- Read/write skills, agents, rules, and commands with YAML frontmatter
 - View local and global configurations
-- Future: Deploy, backup, diff, and validation
+- Deploy local-config to ~/.claude with automatic backup
+- Import from ~/.claude back to local-config
+- Diff calculator to preview changes
+- Configuration validator for frontmatter and structure
 
 ✅ **Well-Tested**
 - 31 passing tests
@@ -90,11 +92,74 @@ local-config/               # Local working directory
 - **Minimal API** - Lightweight HTTP endpoints
 - **Auto-Discovery** - Endpoints registered via `IEndpointGroup` reflection
 
+## How to Deploy Your Configuration
+
+### Using the Console Menu
+
+1. **Run the application:**
+   ```bash
+   dotnet run --project "Claude Setup"
+   ```
+
+2. **View diff before deploying (option 6):**
+   - See what will change when you deploy
+   - Shows new, modified, and deleted files
+
+3. **Validate configuration (option 7):**
+   - Ensures all files have proper frontmatter
+   - Checks required fields
+
+4. **Deploy to ~/.claude (option 8):**
+   - Copies all files from `local-config/` to `~/.claude/`
+   - Creates automatic backup before deploying
+   - Asks for confirmation
+
+5. **Import from ~/.claude (option 9):**
+   - Pulls changes from global back to local
+   - Useful for syncing across machines
+
+### Using the API
+
+**View diff:**
+```bash
+curl http://localhost:5100/api/deploy/diff
+```
+
+**Validate configuration:**
+```bash
+curl http://localhost:5100/api/deploy/validate
+```
+
+**Deploy (with backup):**
+```bash
+curl -X POST "http://localhost:5100/api/deploy?backup=true&dryRun=false"
+```
+
+**Dry run (preview without deploying):**
+```bash
+curl -X POST "http://localhost:5100/api/deploy?backup=true&dryRun=true"
+```
+
+**Import from global:**
+```bash
+curl -X POST "http://localhost:5100/api/deploy/import?backup=true"
+```
+
 ## API Endpoints
 
-### Skills
+### Entities
 
 - `GET /api/skills?isGlobal=false` - List skills from local-config or ~/.claude
+- `GET /api/agents?isGlobal=false` - List agents
+- `GET /api/rules?isGlobal=false` - List rules
+- `GET /api/commands?isGlobal=false` - List commands
+
+### Deployment
+
+- `POST /api/deploy?backup=true&dryRun=false` - Deploy to ~/.claude
+- `POST /api/deploy/import?backup=true` - Import from ~/.claude
+- `GET /api/deploy/diff` - Compare local vs global
+- `GET /api/deploy/validate` - Validate configuration
 
 ## CI/CD
 
@@ -106,13 +171,16 @@ GitHub Actions pipeline runs on every push and pull request:
 
 ## Roadmap
 
-- [ ] Diff calculator (compare local vs global)
-- [ ] Configuration validator
-- [ ] Backup strategy with timestamped backups
-- [ ] Deploy configuration to ~/.claude
-- [ ] Import configuration from ~/.claude
-- [ ] Agents, Rules, Commands endpoints
+- [x] Diff calculator (compare local vs global) ✅
+- [x] Configuration validator ✅
+- [x] Backup strategy with timestamped backups ✅
+- [x] Deploy configuration to ~/.claude ✅
+- [x] Import configuration from ~/.claude ✅
+- [x] Agents, Rules, Commands endpoints ✅
 - [ ] Export/import as ZIP archive
+- [ ] Edit entities via API (PUT/POST/DELETE endpoints)
+- [ ] Merge conflict resolution for import
+- [ ] Watch mode (auto-deploy on file change)
 
 ## License
 
