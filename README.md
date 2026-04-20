@@ -1,6 +1,6 @@
 # Claude Configuration Manager
 
-![CI](https://github.com/yourusername/claude-setup/workflows/CI/badge.svg)
+![CI](https://github.com/RDCoached/claude-setup/workflows/CI/badge.svg)
 
 A .NET 10 console application with embedded Web API to manage Claude configuration files (skills, agents, rules, commands). Maintains a local working copy of configuration and can deploy changes to the global `~/.claude/` directory.
 
