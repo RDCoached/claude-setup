@@ -1,5 +1,6 @@
 using Claude_Setup.Features.Deploy;
 using Claude_Setup.Infrastructure.Configuration;
+using Claude_Setup.Infrastructure.FileSystem;
 using ClaudeSetup.Tests.TestFixtures;
 using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
@@ -22,9 +23,11 @@ public sealed class ImportConfigurationTests
         Directory.CreateDirectory(localPath);
 
         var pathResolver = new TestImportPathResolver(localPath, globalPath);
+        var categoryPathResolver = new CategoryPathResolver(pathResolver);
         var backupStrategy = new BackupStrategy();
+        var fileCopier = new FileCopier();
         var timeProvider = new FakeTimeProvider();
-        var import = new ImportConfiguration(pathResolver, backupStrategy, timeProvider);
+        var import = new ImportConfiguration(categoryPathResolver, backupStrategy, fileCopier, timeProvider);
 
         var options = new ImportOptions(BackupLocal: false);
 
@@ -57,9 +60,11 @@ public sealed class ImportConfigurationTests
             Directory.SetCurrentDirectory(testStructure.RootPath);
 
             var pathResolver = new TestImportPathResolver(localPath, globalPath);
+            var categoryPathResolver = new CategoryPathResolver(pathResolver);
             var backupStrategy = new BackupStrategy();
+            var fileCopier = new FileCopier();
             var timeProvider = new FakeTimeProvider();
-            var import = new ImportConfiguration(pathResolver, backupStrategy, timeProvider);
+            var import = new ImportConfiguration(categoryPathResolver, backupStrategy, fileCopier, timeProvider);
 
             var options = new ImportOptions(BackupLocal: true);
 
@@ -92,9 +97,11 @@ public sealed class ImportConfigurationTests
         Directory.CreateDirectory(localPath);
 
         var pathResolver = new TestImportPathResolver(localPath, globalPath);
+        var categoryPathResolver = new CategoryPathResolver(pathResolver);
         var backupStrategy = new BackupStrategy();
+        var fileCopier = new FileCopier();
         var timeProvider = new FakeTimeProvider();
-        var import = new ImportConfiguration(pathResolver, backupStrategy, timeProvider);
+        var import = new ImportConfiguration(categoryPathResolver, backupStrategy, fileCopier, timeProvider);
 
         var options = new ImportOptions(BackupLocal: false, IncludeCategories: ["skills"]);
 

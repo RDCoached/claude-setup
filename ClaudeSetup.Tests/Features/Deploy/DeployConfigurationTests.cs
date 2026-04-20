@@ -1,5 +1,6 @@
 using Claude_Setup.Features.Deploy;
 using Claude_Setup.Infrastructure.Configuration;
+using Claude_Setup.Infrastructure.FileSystem;
 using ClaudeSetup.Tests.TestFixtures;
 using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
@@ -21,9 +22,11 @@ public sealed class DeployConfigurationTests
         Directory.CreateDirectory(localPath);
 
         var pathResolver = new TestDeployPathResolver(localPath, globalPath);
+        var categoryPathResolver = new CategoryPathResolver(pathResolver);
         var backupStrategy = new BackupStrategy();
+        var fileCopier = new FileCopier();
         var timeProvider = new FakeTimeProvider();
-        var deploy = new DeployConfiguration(pathResolver, backupStrategy, timeProvider);
+        var deploy = new DeployConfiguration(categoryPathResolver, backupStrategy, fileCopier, pathResolver, timeProvider);
 
         var options = new DeployOptions(BackupExisting: true);
 
@@ -49,9 +52,11 @@ public sealed class DeployConfigurationTests
         Directory.CreateDirectory(localPath);
 
         var pathResolver = new TestDeployPathResolver(localPath, globalPath);
+        var categoryPathResolver = new CategoryPathResolver(pathResolver);
         var backupStrategy = new BackupStrategy();
+        var fileCopier = new FileCopier();
         var timeProvider = new FakeTimeProvider();
-        var deploy = new DeployConfiguration(pathResolver, backupStrategy, timeProvider);
+        var deploy = new DeployConfiguration(categoryPathResolver, backupStrategy, fileCopier, pathResolver, timeProvider);
 
         var options = new DeployOptions(BackupExisting: false);
 
@@ -77,9 +82,11 @@ public sealed class DeployConfigurationTests
         File.WriteAllText(Path.Combine(localPath, "test.txt"), "content");
 
         var pathResolver = new TestDeployPathResolver(localPath, globalPath);
+        var categoryPathResolver = new CategoryPathResolver(pathResolver);
         var backupStrategy = new BackupStrategy();
+        var fileCopier = new FileCopier();
         var timeProvider = new FakeTimeProvider();
-        var deploy = new DeployConfiguration(pathResolver, backupStrategy, timeProvider);
+        var deploy = new DeployConfiguration(categoryPathResolver, backupStrategy, fileCopier, pathResolver, timeProvider);
 
         var options = new DeployOptions(DryRun: true);
 
@@ -107,9 +114,11 @@ public sealed class DeployConfigurationTests
         File.WriteAllText(Path.Combine(skillsPath, "test.txt"), "new content");
 
         var pathResolver = new TestDeployPathResolver(localPath, globalPath);
+        var categoryPathResolver = new CategoryPathResolver(pathResolver);
         var backupStrategy = new BackupStrategy();
+        var fileCopier = new FileCopier();
         var timeProvider = new FakeTimeProvider();
-        var deploy = new DeployConfiguration(pathResolver, backupStrategy, timeProvider);
+        var deploy = new DeployConfiguration(categoryPathResolver, backupStrategy, fileCopier, pathResolver, timeProvider);
 
         var options = new DeployOptions(BackupExisting: false);
 
@@ -141,9 +150,11 @@ public sealed class DeployConfigurationTests
         File.WriteAllText(Path.Combine(localPath, "agents", "agent.txt"), "agent");
 
         var pathResolver = new TestDeployPathResolver(localPath, globalPath);
+        var categoryPathResolver = new CategoryPathResolver(pathResolver);
         var backupStrategy = new BackupStrategy();
+        var fileCopier = new FileCopier();
         var timeProvider = new FakeTimeProvider();
-        var deploy = new DeployConfiguration(pathResolver, backupStrategy, timeProvider);
+        var deploy = new DeployConfiguration(categoryPathResolver, backupStrategy, fileCopier, pathResolver, timeProvider);
 
         var options = new DeployOptions(BackupExisting: false, IncludeCategories: ["skills"]);
 

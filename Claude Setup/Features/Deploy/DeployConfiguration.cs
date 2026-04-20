@@ -1,15 +1,16 @@
 using Claude_Setup.Domain.Models;
 using Claude_Setup.Infrastructure.Configuration;
+using Claude_Setup.Infrastructure.FileSystem;
 
 namespace Claude_Setup.Features.Deploy;
 
 public sealed class DeployConfiguration(
-    ClaudePathResolver pathResolver,
+    CategoryPathResolver categoryPathResolver,
     BackupStrategy backupStrategy,
+    FileCopier fileCopier,
+    ClaudePathResolver pathResolver,
     TimeProvider timeProvider)
 {
-    private static readonly string[] AllCategories = ["skills", "agents", "rules", "commands"];
-
     public async Task<DeploymentResult> HandleAsync(DeployOptions options)
     {
         var errors = new List<string>();
@@ -33,13 +34,13 @@ public sealed class DeployConfiguration(
             }
 
             // Determine categories to deploy
-            var categories = options.IncludeCategories ?? AllCategories;
+            var categories = options.IncludeCategories ?? CategoryPathResolver.AllCategories;
 
             // Deploy each category
             foreach (var category in categories)
             {
-                var localPath = GetLocalCategoryPath(category);
-                var globalPath = GetGlobalCategoryPath(category);
+                var localPath = categoryPathResolver.GetLocalPath(category);
+                var globalPath = categoryPathResolver.GetGlobalPath(category);
 
                 if (!Directory.Exists(localPath))
                 {
@@ -48,7 +49,7 @@ public sealed class DeployConfiguration(
 
                 if (!options.DryRun)
                 {
-                    filesDeployed += await DeployCategoryAsync(localPath, globalPath);
+                    filesDeployed += await fileCopier.CopyDirectoryAsync(localPath, globalPath);
                 }
             }
 
@@ -71,53 +72,5 @@ public sealed class DeployConfiguration(
                 BackupPath: backupPath
             );
         }
-    }
-
-    private async Task<int> DeployCategoryAsync(string sourcePath, string targetPath)
-    {
-        Directory.CreateDirectory(targetPath);
-
-        var filesCopied = 0;
-
-        foreach (var file in Directory.GetFiles(sourcePath, "*", SearchOption.AllDirectories))
-        {
-            var relativePath = Path.GetRelativePath(sourcePath, file);
-            var targetFile = Path.Combine(targetPath, relativePath);
-
-            var targetDir = Path.GetDirectoryName(targetFile);
-            if (targetDir is not null)
-            {
-                Directory.CreateDirectory(targetDir);
-            }
-
-            await Task.Run(() => File.Copy(file, targetFile, overwrite: true));
-            filesCopied++;
-        }
-
-        return filesCopied;
-    }
-
-    private string GetLocalCategoryPath(string category)
-    {
-        return category switch
-        {
-            "skills" => pathResolver.GetSkillsPath(isGlobal: false),
-            "agents" => pathResolver.GetAgentsPath(isGlobal: false),
-            "rules" => pathResolver.GetRulesPath(isGlobal: false),
-            "commands" => pathResolver.GetCommandsPath(isGlobal: false),
-            _ => throw new ArgumentException($"Unknown category: {category}", nameof(category))
-        };
-    }
-
-    private string GetGlobalCategoryPath(string category)
-    {
-        return category switch
-        {
-            "skills" => pathResolver.GetSkillsPath(isGlobal: true),
-            "agents" => pathResolver.GetAgentsPath(isGlobal: true),
-            "rules" => pathResolver.GetRulesPath(isGlobal: true),
-            "commands" => pathResolver.GetCommandsPath(isGlobal: true),
-            _ => throw new ArgumentException($"Unknown category: {category}", nameof(category))
-        };
     }
 }
