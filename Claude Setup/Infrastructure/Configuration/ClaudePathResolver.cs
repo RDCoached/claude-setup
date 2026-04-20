@@ -1,6 +1,6 @@
 namespace Claude_Setup.Infrastructure.Configuration;
 
-public sealed class ClaudePathResolver
+public class ClaudePathResolver
 {
     private readonly string _homeDirectory;
     private readonly string _workingDirectory;
@@ -26,22 +26,22 @@ public sealed class ClaudePathResolver
         return Path.Combine(GetGlobalClaudePath(), category);
     }
 
-    public string GetSkillsPath(bool isGlobal)
+    public virtual string GetSkillsPath(bool isGlobal)
     {
         return isGlobal ? GetGlobalPath("skills") : GetLocalPath("skills");
     }
 
-    public string GetAgentsPath(bool isGlobal)
+    public virtual string GetAgentsPath(bool isGlobal)
     {
         return isGlobal ? GetGlobalPath("agents") : GetLocalPath("agents");
     }
 
-    public string GetRulesPath(bool isGlobal)
+    public virtual string GetRulesPath(bool isGlobal)
     {
         return isGlobal ? GetGlobalPath("rules") : GetLocalPath("rules");
     }
 
-    public string GetCommandsPath(bool isGlobal)
+    public virtual string GetCommandsPath(bool isGlobal)
     {
         return isGlobal ? GetGlobalPath("commands") : GetLocalPath("commands");
     }
